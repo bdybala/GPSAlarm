@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GPS Alarm</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="nav_new_alarm_title">Nowy alarm</string>
+    <string name="nav_show_alarms_title">Alarmy</string>
+    <string name="nav_settings_title">Ustawienia</string>
+    <string name="nav_my_places_title">Moje miejsca</string>
+    <string name="permission_location_denied">Aplikacja nie ma uprawnień do lokalizacji</string>
+</resources>
