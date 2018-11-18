@@ -1,5 +1,6 @@
 package bdybala.android.gpsalarm.main.maps;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,10 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 
 import bdybala.android.gpsalarm.R;
@@ -21,6 +27,7 @@ public class MapsFragment extends MvpFragment<MapsView, MapsPresenter> implement
 
     MapView mMapView;
     private GoogleMap mGoogleMap;
+    private Circle mCircle;
 
     @Override
     public MapsPresenter createPresenter() {
@@ -89,8 +96,45 @@ public class MapsFragment extends MvpFragment<MapsView, MapsPresenter> implement
 
         try {
             mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(LatLng latLng) {
+                    getPresenter().handleLongClick(latLng);
+                }
+            });
         } catch (SecurityException e) {
             log.error("Location permissions denied");
         }
+    }
+
+    @Override
+    public void drawCircleAndMoveThere(LatLng latLng, int radius) {
+        if (mCircle != null) {
+            mCircle.remove();
+        }
+        CircleOptions circleOptions = new CircleOptions();
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        circleOptions.strokeColor(Color.BLACK);
+        circleOptions.fillColor(0x260000FF);
+        circleOptions.strokeWidth(2);
+        mCircle = mGoogleMap.addCircle(circleOptions);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, getZoomLevel(radius));
+        mGoogleMap.animateCamera(cameraUpdate);
+    }
+
+    private float getZoomLevel(double radius) {
+        float zoomLevel;
+        radius = radius * 1.5;
+        double scale = radius / 500;
+        zoomLevel = (int) (16 - Math.log(scale) / Math.log(2));
+        return zoomLevel;
+    }
+
+    @Override
+    public void moveToNewPoint(LatLng point) {
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(point);
+        mGoogleMap.animateCamera(cameraUpdate);
     }
 }
