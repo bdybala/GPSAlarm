@@ -7,5 +7,11 @@ public interface MapsView extends MvpView {
 
     void drawCircleAndMoveThere(LatLng latLng, int radius);
 
+    void showRadiusInputDialog();
+
+    void hideRadiusInputDialog();
+
     void moveToNewPoint(LatLng point);
+
+    void clearCircle();
 }
